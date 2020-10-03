@@ -8,7 +8,7 @@ description = "Unix Domain sockets for Tokio...on Windows!"
 repository = "https://github.com/tbraun96/tokio-agnostic-uds"
 readme = "README.md"
 # keywords = ""
-categories = ["asynchronous"]
+categories = ["asynchronous", "uds", "networking"]
 exclude = [".gitignore"]
 
 [dependencies]
