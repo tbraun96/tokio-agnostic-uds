@@ -33,7 +33,7 @@ impl UnixListener {
 
     #[cfg(target_os = "windows")]
     pub fn incoming(self) -> crate::incoming::Incoming {
-        crate::incoming::Incoming::new(self.inner)
+        self.inner.incoming()
     }
 
     #[cfg(not(target_os = "windows"))]

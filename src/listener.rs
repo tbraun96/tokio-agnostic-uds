@@ -30,6 +30,7 @@ impl UnixListener {
     ///
     /// The returned listener will be associated with the given event loop
     /// specified by `handle` and is ready to perform I/O.
+    #[allow(dead_code)]
     pub fn from_std(listener: net::UnixListener) -> io::Result<UnixListener> {
         let listener = mio_uds::UnixListener::from_listener(listener)?;
         let io = PollEvented::new(listener)?;
@@ -37,11 +38,13 @@ impl UnixListener {
     }
 
     /// Returns the local socket address of this listener.
+    #[allow(dead_code)]
     pub fn local_addr(&self) -> io::Result<SocketAddr> {
         self.io.get_ref().local_addr()
     }
 
     /// Returns the value of the `SO_ERROR` option.
+    #[allow(dead_code)]
     pub fn take_error(&self) -> io::Result<Option<io::Error>> {
         self.io.get_ref().take_error()
     }
@@ -139,6 +142,7 @@ impl UnixListener {
     ///
     /// This method returns an implementation of the `Stream` trait which
     /// resolves to the sockets the are accepted on this listener.
+    #[allow(dead_code)]
     pub fn incoming(self) -> Incoming {
         Incoming::new(self)
     }

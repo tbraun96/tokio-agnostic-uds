@@ -1,5 +1,5 @@
 [package]
-name = "tokio-agnostic-uds"
+name = "tokio_agnostic_uds"
 edition = "2018"
 version = "0.1.0"
 license = "MIT"

@@ -1,15 +1,8 @@
-extern crate futures;
-extern crate tokio;
-extern crate tokio_uds_windows;
-
-extern crate tempfile;
-
-use tokio_uds_windows::*;
+use tokio_agnostic_uds::*;
 use tempfile::Builder;
-use tokio::io::{AsyncWriteExt, AsyncReadExt, AsyncBufReadExt};
-use tokio::time::Duration;
+
 use futures::{SinkExt, StreamExt};
-use std::io::Read;
+
 use tokio_util::codec::{Framed, LengthDelimitedCodec};
 use bytes::Bytes;
 use std::io::BufRead;
@@ -20,7 +13,7 @@ async fn main() -> std::io::Result<()> {
     let sock_path = dir.path().join("connect.sock");
 
     let mut server = UnixListener::bind(&sock_path)?;
-    let (mut tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
     std::thread::spawn(move || {
         let stdin = std::io::stdin();
         let mut iter = stdin.lock().lines();
@@ -32,10 +25,10 @@ async fn main() -> std::io::Result<()> {
     });
 
     tokio::task::spawn(async move {
-        while let Some((mut stream, addr)) = server.next().await {
+        while let Some((stream, addr)) = server.next().await {
             println!("New conn from: {:?}", &addr);
             let client_framed = tokio_util::codec::Framed::new(stream, tokio_util::codec::LengthDelimitedCodec::new());
-            let (client_framed_tx, mut client_framed_rx) = client_framed.split();
+            let (_client_framed_tx, mut client_framed_rx) = client_framed.split();
             while let Some(packet) = client_framed_rx.next().await {
                 let packet = packet.unwrap();
                 println!("Received packet! {:?}", &packet);
@@ -46,14 +39,14 @@ async fn main() -> std::io::Result<()> {
 
 
     tokio::task::spawn(async move {
-        let mut client = UnixStream::connect(&sock_path).await.unwrap();
-        let (mut client_tx, client_rx) = Framed::new(client, LengthDelimitedCodec::new()).split();
+        let client = UnixStream::connect(&sock_path).await.unwrap();
+        let (mut client_tx, _client_rx) = Framed::new(client, LengthDelimitedCodec::new()).split();
 
         while let Some(keys) = rx.next().await {
             println!("Recv key; client will send now");
             client_tx.send(keys).await.unwrap();
         }
-    }).await;
+    }).await.unwrap();
 
 
     Ok(())
