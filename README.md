@@ -5,6 +5,5 @@ This project takes [this repo](https://github.com/Azure/tokio-uds-windows) and u
 Check the examples directory for an example of using the software
 
 ## Windows support for Unix domain sockets
-Support for Unix domain sockets was introduced in Windows 10
-[Insider Build 17063][af-unix-preview]. It became generally available in version
+Support for Unix domain sockets was introduced in Windows 10. It became generally available in version
 1809 (aka the October 2018 Update), and in Windows Server 1809/2019.
