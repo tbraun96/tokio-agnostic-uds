@@ -13,14 +13,14 @@ async fn main() -> std::io::Result<()> {
     let sock_path = dir.path().join("connect.sock");
 
     let mut server = UnixListener::bind(&sock_path)?;
-    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+    let (tx, mut rx) = futures::channel::mpsc::unbounded();
     std::thread::spawn(move || {
         let stdin = std::io::stdin();
         let mut iter = stdin.lock().lines();
         while let Some(keys) = iter.next() {
             let keys = keys.unwrap();
             println!("Sent {}", &keys);
-            tx.send(Bytes::from(keys)).unwrap();
+            tx.unbounded_send(Bytes::from(keys)).unwrap();
         }
     });
 
